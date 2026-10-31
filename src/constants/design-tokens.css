@@ -1,0 +1,12 @@
+:root {
+  --color-ink: #0c0c0c;
+  --color-paper: #ffffff;
+  --color-projects: #e9edf0;
+  --color-project-card: #f8f9fa;
+  --color-ice: #d7e2ea;
+  --color-gradient-dark: #646973;
+  --color-gradient-light: #bbccd7;
+  --font-display: 'Kanit', sans-serif;
+  --radius-section: 60px;
+  --radius-section-mobile: 36px;
+}

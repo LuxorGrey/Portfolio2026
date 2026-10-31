@@ -1,0 +1,35 @@
+export const es = {
+  meta: {
+    title: 'Óscar Trevejo — Desarrollo y diseño',
+    description: 'Portfolio de Óscar Trevejo, desarrollador frontend y diseñador gráfico.',
+  },
+  nav: { about: 'Sobre mí', areas: 'Áreas', projects: 'Proyectos', contact: 'Contacto' },
+  technology: { heading: 'TECNOLOGÍAS' },
+  hero: { first: 'ÓSCAR', last: 'TREVEJO', imageAlt: 'Retrato ilustrado de Óscar Trevejo' },
+  projects: {
+    eyebrow: 'Selección de proyectos',
+    heading: 'PROYECTOS',
+    view: 'Visitar proyecto',
+    fullDevelopment: 'Desarrollo completo',
+    early: 'Fase temprana',
+    whty: { title: 'WHTY', kind: 'Portfolio de artista', summary: 'Un espacio digital para mostrar el trabajo de un artista.', imageAlt: 'Captura de la web WHTY' },
+    presenty: { title: 'Presenty', kind: 'Buscador de regalos', summary: 'Una forma de descubrir ideas para regalar. Proyecto en fase temprana.', imageAlt: 'Captura de la web Presenty' },
+  },
+  about: {
+    eyebrow: 'Sobre mí',
+    heading: 'ENTRE EL CÓDIGO Y LA IMAGEN.',
+    body: 'Soy Óscar, desarrollador frontend y diseñador gráfico. Me interesa tanto cómo funciona una interfaz como lo que comunica.',
+    experience: 'Experiencia',
+    present: 'Actualidad',
+  },
+  specialties: {
+    heading: 'LO QUE HAGO',
+    frontend: { title: 'Desarrollo frontend', body: 'Interfaces web con estructura, accesibilidad y atención al detalle.' },
+    interface: { title: 'Diseño de interfaces', body: 'Contenido y navegación que se entienden de un vistazo.' },
+    graphic: { title: 'Diseño gráfico', body: 'Composición, tipografía y un lenguaje visual coherente.' },
+    identity: { title: 'Identidad visual', body: 'Sistemas gráficos que mantienen su carácter en cada soporte.' },
+    integration: { title: 'Diseño y código', body: 'Una idea que conserva su intención al convertirse en producto.' },
+  },
+  contact: { eyebrow: 'Contacto', heading: '¿HABLAMOS?', linkedin: 'LinkedIn', github: 'GitHub', artstation: 'ArtStation' },
+  accessibility: { navigation: 'Navegación principal', language: 'Cambiar idioma', external: 'Abre en una pestaña nueva' },
+}
