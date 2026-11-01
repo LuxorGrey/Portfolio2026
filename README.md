@@ -1,10 +1,12 @@
 # Portfolio de Oscar Trevejo Rodríguez — briefing de producto
 
-> **Estado:** aplicación local implementada en este repositorio. `README.rtf` conserva la referencia visual inicial. La decisión más reciente sobre diseño e interacción está en [ADR 0006](docs/adr/0006-tongue-grid-nav-and-technologies.md).
+> **Estado:** aplicación local implementada en este repositorio. `README.rtf` conserva la referencia visual inicial. La decisión más reciente sobre diseño e interacción está en [ADR 0007](docs/adr/0007-gallery-theme-and-role-bubble.md).
 
 ## Desarrollo local
 
-Requiere Node.js 24 o superior y npm. Ejecutar `npm ci`, `npm run dev`, `npm run lint`, `npm run typecheck` y `npm run build` desde la raíz del repositorio. La aplicación se abre en `/es/` y `/en/`; el prototipo de diseño está en `/prototype/design`.
+Requiere Node.js 24 o superior y npm. Ejecutar `npm ci`, `npm run dev`, `npm run lint`, `npm run typecheck` y `npm run build` desde la raíz del repositorio. La portada se abre en `/es/` y `/en/`, y la galería en `/es/galeria/` y `/en/gallery/`. El prototipo de diseño está en `/prototype/design`.
+
+Para regenerar las imágenes WebP y sus miniaturas a partir de los originales locales, ejecutar `npm run images:optimize`. Las decisiones de carga, las cifras medidas, el escaneo de seguridad y los pasos de comprobación están en [docs/PERFORMANCE-SECURITY.md](docs/PERFORMANCE-SECURITY.md).
 
 ## Objetivo
 
@@ -14,12 +16,13 @@ La aplicación conserva del RTF el fondo oscuro `#0C0C0C`, Kanit de gran escala,
 
 ## Contenido y orden
 
-1. **Portada:** «ÓSCAR» y «TREVEJO» detrás del retrato interactivo. Mirada inmediata hacia el cursor, parpadeo cada 2–3 segundos y parallax suave.
+1. **Portada:** «ÓSCAR» y «TREVEJO» detrás del retrato interactivo. Mirada inmediata hacia el cursor, parpadeo cada 2–3 segundos, parallax suave y un bocadillo profesional que cambia cada 4,2 segundos.
 2. **Proyectos:** título corto en una línea, WHTY y Presenty en dos fichas amplias. Presenty indica su fase temprana.
 3. **Sobre mí y experiencia:** presentación breve y trayectoria laboral.
 4. **Tecnologías:** carrusel de React, TypeScript, JavaScript, HTML, CSS, C#, Node.js, Tailwind CSS, Styled Components y PostgreSQL. La lista se edita en `src/constants/content.ts`.
 5. **Especialidades:** cinco entradas de desarrollo, diseño y su unión.
-6. **Contacto:** enlaces a [LinkedIn](https://www.linkedin.com/in/oscar-trevejo-rodriguez-a8a471166/), GitHub y ArtStation. El CV de 2024 no se enlaza.
+6. **Galería:** 87 piezas organizadas como en WHTY: fotografía, diseño, portadas, logotipos, 3D y videoclips. Véase [inventario y edición](docs/GALLERY.md).
+7. **Contacto:** enlaces a [LinkedIn](https://www.linkedin.com/in/oscar-trevejo-rodriguez-a8a471166/), GitHub y ArtStation. El CV de 2024 no se enlaza.
 
 ## Diseño que se conserva y ajustes propuestos
 
@@ -27,7 +30,7 @@ La aplicación conserva del RTF el fondo oscuro `#0C0C0C`, Kanit de gran escala,
 - El retrato animado de la mujer del original **no representa a Oscar**. La decisión posterior de Oscar es usar un retrato 3D ilustrado basado en su propia foto, con ojos azul claro, mirada que siga el cursor, parpadeo, parallax sutil, arrastre desde toda la cara y un clic breve que muestra la lengua un segundo. El prototipo está en `src/prototype/`. Véanse [ADR 0003](docs/adr/0003-interactive-portrait.md) y [ADR 0006](docs/adr/0006-tongue-grid-nav-and-technologies.md).
 - Priorizar material propio. Los enlaces de `motionsites.ai`, Figma, Higgs y CloudFront del RTF son referencias ajenas, no activos de producción.
 - Conservar el carácter de la tipografía y el degradado. Revisar el tamaño de `OSCAR TREVEJO` a dos líneas si el nombre se corta: la legibilidad prevalece sobre reproducir literalmente el `h1` de Mina.
-- La navegación usa **Proyectos / Áreas / Sobre mí / Contacto** y su equivalente inglés, con el contorno y las esquinas recortadas de LuxorStudio. El selector de idioma lleva a `/es/` o `/en/`. Las superficies oscuras usan su cuadrícula estática, iluminada suavemente al pasar el puntero; se excluye la línea roja animada.
+- La navegación usa **Proyectos / Áreas / Galería / Sobre mí / Contacto** y su equivalente inglés, con el contorno y las esquinas recortadas de LuxorStudio. Los selectores de idioma y tema permanecen en la cabecera. Las superficies de portada conservan la cuadrícula, iluminada suavemente al pasar el puntero; se excluye la línea roja animada.
 
 ## Requisitos de calidad
 
@@ -42,4 +45,4 @@ La aplicación conserva del RTF el fondo oscuro `#0C0C0C`, Kanit de gran escala,
 
 La fuente de datos revisada es `E:\PortfolioReact\DeveloperCurriculum` (código local del portfolio actual). Su web pública indicada por Oscar es [oscartrevejo.netlify.app](https://oscartrevejo.netlify.app/); la consulta automatizada a esa URL no respondió, por lo que los datos se extrajeron del repositorio local. El RTF original incluye material de muestra ajeno y contradicciones internas; se conserva sin editar para comparación. [docs/SOURCE-AUDIT.md](docs/SOURCE-AUDIT.md) distingue hechos y comprobaciones editoriales. [GLOSSARY.md](GLOSSARY.md) fija el vocabulario. Los ADR [0001](docs/adr/0001-content-and-visual-identity.md), [0002](docs/adr/0002-local-content-and-assets.md) y [0003](docs/adr/0003-interactive-portrait.md) registran las decisiones de identidad, contenido y retrato interactivo.
 
-**Implementación local:** el repositorio incluye la web ES/EN, capturas de WHTY/Presenty, retrato interactivo, experiencia, carrusel de tecnologías, especialidades y contacto. Antes de publicar se comprobarán fechas, enlaces, peso de las imágenes y fidelidad visual del retrato. Los 21 GIF y el retrato ajeno del RTF siguen excluidos.
+**Implementación local:** el repositorio incluye la web ES/EN, capturas de WHTY/Presenty, retrato interactivo, experiencia, carrusel de tecnologías, galería, especialidades y contacto. Las imágenes publicadas se sirven como WebP; los originales quedan fuera de `dist/`. Antes de publicar se comprobarán fechas, enlaces y créditos de las piezas importadas de WHTY. Los 21 GIF y el retrato ajeno del RTF siguen excluidos.

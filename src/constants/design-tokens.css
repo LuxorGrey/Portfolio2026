@@ -6,7 +6,29 @@
   --color-ice: #d7e2ea;
   --color-gradient-dark: #646973;
   --color-gradient-light: #bbccd7;
+  --color-surface-bg: #0c0c0c;
+  --color-surface-text: #d7e2ea;
+  --color-surface-muted: #aebdc7;
+  --color-grid-line: #ffffff12;
+  --color-grid-glow: #ffffff42;
+  --color-nav-bg: #101112;
+  --color-nav-text: #d0d3d6;
   --font-display: 'Kanit', sans-serif;
   --radius-section: 60px;
   --radius-section-mobile: 36px;
+}
+
+:root[data-theme='light'] {
+  --color-surface-bg: #f1f4f6;
+  --color-surface-text: #1b252d;
+  --color-surface-muted: #51616d;
+  --color-grid-line: #17252f14;
+  --color-grid-glow: #17252f45;
+  --color-nav-bg: #e8edf0;
+  --color-nav-text: #26323b;
+  --color-gradient-dark: #303c47;
+  --color-gradient-light: #7a909f;
+  --color-projects: #e2e9ed;
+  --color-project-card: #f8fafb;
+  --color-paper: #f9fbfc;
 }

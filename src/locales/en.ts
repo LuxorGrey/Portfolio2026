@@ -5,9 +5,26 @@ export const en: Copy = {
     title: 'Oscar Trevejo — Code and design',
     description: 'Portfolio of Oscar Trevejo, frontend developer and graphic designer.',
   },
-  nav: { about: 'About', areas: 'Focus', projects: 'Projects', contact: 'Contact' },
+  nav: { about: 'About', areas: 'Focus', projects: 'Projects', gallery: 'Gallery', contact: 'Contact' },
   technology: { heading: 'TECHNOLOGIES' },
-  hero: { first: 'OSCAR', last: 'TREVEJO', imageAlt: 'Illustrated portrait of Oscar Trevejo' },
+  hero: {
+    first: 'OSCAR', last: 'TREVEJO', imageAlt: 'Illustrated portrait of Oscar Trevejo',
+    roles: ['Senior Frontend Designer', 'Graphic Designer', '3D Modelling Artist', 'Creative Developer'],
+  },
+  theme: { toLight: 'Switch to light mode', toDark: 'Switch to dark mode' },
+  gallery: {
+    metaTitle: 'Gallery — Oscar Trevejo', metaDescription: 'Visual gallery of photography, design, covers, logotypes, 3D art and music videos.',
+    title: 'GALLERY', intro: 'A visual archive arranged by discipline. Explore each collection and open the pieces for a closer look.',
+    all: 'All', pieces: 'pieces', image: 'Piece', video: 'Music video', close: 'Close viewer', previous: 'Previous', next: 'Next',
+    categories: {
+      photos: { title: 'Photography', description: 'Portraits, scenes and photographic studies.' },
+      design: { title: 'Design', description: 'Compositions and graphic projects.' },
+      covers: { title: 'Covers', description: 'Artwork for music and publications.' },
+      logos: { title: 'Logotypes', description: 'Symbols, marks and identity.' },
+      threeD: { title: '3D art', description: 'Three-dimensional models and scenes.' },
+      videos: { title: 'Music videos', description: 'Audiovisual work and motion.' },
+    },
+  },
   projects: {
     eyebrow: 'Selected projects',
     heading: 'PROJECTS',

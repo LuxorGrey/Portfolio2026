@@ -1,20 +1,18 @@
 import { useEffect, useRef } from 'react'
-import centerUrl from '../assets/face/oscar-face-center.png'
-import leftUrl from '../assets/face/oscar-face-left.png'
-import rightUrl from '../assets/face/oscar-face-right.png'
-import upUrl from '../assets/face/oscar-face-up.png'
-import downUrl from '../assets/face/oscar-face-down.png'
-import blinkUrl from '../assets/face/oscar-face-blink.png'
-import angry1Url from '../assets/face/oscar-face-angry-1.png'
-import angry2Url from '../assets/face/oscar-face-angry-2.png'
-import angry3Url from '../assets/face/oscar-face-angry-3.png'
-import tongueUrl from '../assets/face/oscar-face-tongue.png'
+import centerUrl from '../assets/face/oscar-face-center.webp'
+import leftUrl from '../assets/face/oscar-face-left.webp'
+import rightUrl from '../assets/face/oscar-face-right.webp'
+import upUrl from '../assets/face/oscar-face-up.webp'
+import downUrl from '../assets/face/oscar-face-down.webp'
+import blinkUrl from '../assets/face/oscar-face-blink.webp'
+import angry1Url from '../assets/face/oscar-face-angry-1.webp'
+import angry2Url from '../assets/face/oscar-face-angry-2.webp'
+import angry3Url from '../assets/face/oscar-face-angry-3.webp'
+import tongueUrl from '../assets/face/oscar-face-tongue.webp'
 
 const SIZE = 640
-type Frames = Record<
-  'center' | 'left' | 'right' | 'up' | 'down' | 'blink' | 'angry1' | 'angry2' | 'angry3' | 'tongue',
-  HTMLCanvasElement
->
+type FrameName = 'center' | 'left' | 'right' | 'up' | 'down' | 'blink' | 'angry1' | 'angry2' | 'angry3' | 'tongue'
+type Frames = { center: HTMLCanvasElement } & Partial<Record<Exclude<FrameName, 'center'>, HTMLCanvasElement>>
 type Point = { x: number; y: number }
 
 function clamp(value: number, min: number, max: number) {
@@ -173,14 +171,14 @@ export default function InteractiveFace({ ariaLabel }: { ariaLabel: string }) {
       const direction = strength < 0.14
         ? frames.center
         : horizontal
-          ? targetGaze.x < 0 ? frames.left : frames.right
-          : targetGaze.y < 0 ? frames.up : frames.down
+          ? targetGaze.x < 0 ? frames.left ?? frames.center : frames.right ?? frames.center
+          : targetGaze.y < 0 ? frames.up ?? frames.center : frames.down ?? frames.center
       const angry = angerIndex(now)
-      const frame = tongueUntil > now ? frames.tongue
-        : angry === 0 ? frames.angry1
-        : angry === 1 ? frames.angry2
-          : angry === 2 ? frames.angry3
-            : blinkUntil > now ? frames.blink : direction
+      const frame = tongueUntil > now ? frames.tongue ?? direction
+        : angry === 0 ? frames.angry1 ?? direction
+        : angry === 1 ? frames.angry2 ?? direction
+          : angry === 2 ? frames.angry3 ?? direction
+            : blinkUntil > now ? frames.blink ?? direction : direction
       // Each state is one complete frame: no iris, mouth, or face overlays.
       context.drawImage(frame, 0, 0)
 
@@ -317,25 +315,25 @@ export default function InteractiveFace({ ariaLabel }: { ariaLabel: string }) {
 
     canvas.width = SIZE
     canvas.height = SIZE
-    Promise.all(
-      [centerUrl, leftUrl, rightUrl, upUrl, downUrl, blinkUrl, angry1Url, angry2Url, angry3Url, tongueUrl].map(loadFrame),
-    ).then((loaded) => {
+    loadFrame(centerUrl).then((center) => {
       if (disposed) return
-      frames = {
-        center: loaded[0],
-        left: loaded[1],
-        right: loaded[2],
-        up: loaded[3],
-        down: loaded[4],
-        blink: loaded[5],
-        angry1: loaded[6],
-        angry2: loaded[7],
-        angry3: loaded[8],
-        tongue: loaded[9],
-      }
-      alphaMap = loaded[0].getContext('2d')?.getImageData(0, 0, SIZE, SIZE).data ?? null
+      frames = { center }
+      alphaMap = center.getContext('2d')?.getImageData(0, 0, SIZE, SIZE).data ?? null
       draw()
       if (fallbackRef.current) fallbackRef.current.style.visibility = 'hidden'
+      const remaining: [Exclude<FrameName, 'center'>, string][] = [
+        ['left', leftUrl], ['right', rightUrl], ['up', upUrl], ['down', downUrl],
+        ['blink', blinkUrl], ['angry1', angry1Url], ['angry2', angry2Url],
+        ['angry3', angry3Url], ['tongue', tongueUrl],
+      ]
+      for (const [name, url] of remaining) {
+        loadFrame(url).then((frame) => {
+          if (disposed || !frames) return
+          frames[name] = frame
+          lastPaint.x = NaN
+          if (visible) draw()
+        }).catch(() => { /* Keep the center frame if an optional image fails. */ })
+      }
     })
     window.addEventListener('pointermove', onWindowPointerMove, {
       passive: true,
@@ -375,7 +373,7 @@ export default function InteractiveFace({ ariaLabel }: { ariaLabel: string }) {
       role="img"
       aria-label={ariaLabel}
     >
-      <img ref={fallbackRef} src={centerUrl} alt="" aria-hidden="true" />
+      <img ref={fallbackRef} src={centerUrl} alt="" aria-hidden="true" width="1254" height="1254" fetchPriority="high" />
       <canvas ref={canvasRef} aria-hidden="true" />
     </div>
   )

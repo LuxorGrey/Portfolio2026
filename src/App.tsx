@@ -1,34 +1,55 @@
-import { useEffect, useState } from 'react'
-import { ArrowUpRight } from 'lucide-react'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { ArrowUpRight, Moon, Sun } from 'lucide-react'
 import InteractiveFace from './components/InteractiveFace'
+import HeroRoleBubble from './components/HeroRoleBubble'
 import { EXPERIENCE, PROJECTS, SPECIALTY_IDS, TECHNOLOGIES } from './constants/content'
 import { DEFAULT_LOCALE, SITE, type Locale } from './constants/site'
 import { COPY } from './locales'
 import './app.css'
+
+const GalleryPage = lazy(() => import('./components/GalleryPage'))
 
 function readLocale(): Locale {
   const route = window.location.pathname.split('/')[1]
   return route === 'es' || route === 'en' ? route : DEFAULT_LOCALE
 }
 
+function readPage() {
+  return /^\/(es|en)\/(galeria|gallery)(\/|$)/.test(window.location.pathname) ? 'gallery' : 'home'
+}
+
+function readTheme(): 'dark' | 'light' {
+  try { return window.localStorage.getItem('portfolio-theme') === 'light' ? 'light' : 'dark' }
+  catch { return 'dark' }
+}
+
 function App() {
   const [locale, setLocale] = useState<Locale>(readLocale)
+  const [page, setPage] = useState<'home' | 'gallery'>(readPage)
+  const [theme, setTheme] = useState<'dark' | 'light'>(readTheme)
   const copy = COPY[locale]
+  const homeHref = `/${locale}/`
+  const galleryHref = `/${locale}/${locale === 'es' ? 'galeria' : 'gallery'}/`
 
   useEffect(() => {
     if (!/^\/(es|en)(\/|$)/.test(window.location.pathname)) {
       window.history.replaceState({}, '', `/${DEFAULT_LOCALE}/${window.location.hash}`)
     }
-    const onPopState = () => setLocale(readLocale())
+    const onPopState = () => { setLocale(readLocale()); setPage(readPage()) }
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
   useEffect(() => {
     document.documentElement.lang = locale
-    document.title = copy.meta.title
-    document.querySelector('meta[name="description"]')?.setAttribute('content', copy.meta.description)
-  }, [locale, copy.meta.title, copy.meta.description])
+    document.title = page === 'gallery' ? copy.gallery.metaTitle : copy.meta.title
+    document.querySelector('meta[name="description"]')?.setAttribute('content', page === 'gallery' ? copy.gallery.metaDescription : copy.meta.description)
+  }, [locale, page, copy.meta.title, copy.meta.description, copy.gallery.metaTitle, copy.gallery.metaDescription])
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    try { window.localStorage.setItem('portfolio-theme', theme) } catch { /* Storage may be disabled. */ }
+  }, [theme])
 
   useEffect(() => {
     const onPointerMove = (event: PointerEvent) => {
@@ -46,7 +67,8 @@ function App() {
 
   function switchLocale() {
     const next: Locale = locale === 'es' ? 'en' : 'es'
-    window.history.pushState({}, '', `/${next}/${window.location.hash}`)
+    const nextPath = page === 'gallery' ? `/${next}/${next === 'es' ? 'galeria' : 'gallery'}/` : `/${next}/`
+    window.history.pushState({}, '', `${nextPath}${window.location.hash}`)
     setLocale(next)
   }
 
@@ -54,21 +76,28 @@ function App() {
     <div className="site-shell" id="inicio">
       <header className="site-header grid-surface">
         <nav aria-label={copy.accessibility.navigation}>
-          <a href="#proyectos">{copy.nav.projects}</a>
-          <a href="#areas">{copy.nav.areas}</a>
-          <a href="#sobre-mi">{copy.nav.about}</a>
+          <a href={`${homeHref}#proyectos`}>{copy.nav.projects}</a>
+          <a href={`${homeHref}#areas`}>{copy.nav.areas}</a>
+          <a href={galleryHref} aria-current={page === 'gallery' ? 'page' : undefined}>{copy.nav.gallery}</a>
+          <a href={`${homeHref}#sobre-mi`}>{copy.nav.about}</a>
           <a href="#contacto">{copy.nav.contact}<ArrowUpRight size={16} aria-hidden="true" /></a>
         </nav>
-        <button type="button" className="language-switch" onClick={switchLocale} aria-label={copy.accessibility.language}>
-          {locale.toUpperCase()} <span aria-hidden="true">/</span> <span className="language-other">{locale === 'es' ? 'EN' : 'ES'}</span>
-        </button>
+        <div className="header-controls">
+          <button type="button" className="theme-switch" role="switch" aria-checked={theme === 'light'} aria-label={theme === 'dark' ? copy.theme.toLight : copy.theme.toDark} onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}>
+            <Moon size={15} aria-hidden="true" /><span className="theme-switch-thumb" /><Sun size={15} aria-hidden="true" />
+          </button>
+          <button type="button" className="language-switch" onClick={switchLocale} aria-label={copy.accessibility.language}>
+            {locale.toUpperCase()} <span aria-hidden="true">/</span> <span className="language-other">{locale === 'es' ? 'EN' : 'ES'}</span>
+          </button>
+        </div>
       </header>
 
-      <main>
+      {page === 'gallery' ? <Suspense fallback={<main className="gallery-loading grid-surface" aria-busy="true">{copy.gallery.title}</main>}><GalleryPage copy={copy} /></Suspense> : <main>
         <section className="hero grid-surface" aria-labelledby="hero-title">
           <div className="hero-stage">
             <h1 id="hero-title" className="hero-title"><span>{copy.hero.first}</span><span>{copy.hero.last}</span></h1>
             <div className="hero-face"><InteractiveFace ariaLabel={copy.hero.imageAlt} /></div>
+            <HeroRoleBubble roles={copy.hero.roles} />
           </div>
         </section>
 
@@ -83,7 +112,7 @@ function App() {
               return (
                 <article className="project-card" key={project.id}>
                   <div className="project-image-wrap">
-                    <img src={project.image} alt={details.imageAlt} loading="lazy" />
+                    <img src={project.image} alt={details.imageAlt} width="1345" height="742" loading="lazy" decoding="async" />
                     <span className="project-number">{project.number}</span>
                   </div>
                   <div className="project-info">
@@ -144,7 +173,7 @@ function App() {
             </ol>
           </div>
         </section>
-      </main>
+      </main>}
 
       <footer className="contact grid-surface" id="contacto">
         <span className="section-index">03 / {copy.contact.eyebrow}</span>

@@ -3,9 +3,26 @@ export const es = {
     title: 'Óscar Trevejo — Desarrollo y diseño',
     description: 'Portfolio de Óscar Trevejo, desarrollador frontend y diseñador gráfico.',
   },
-  nav: { about: 'Sobre mí', areas: 'Áreas', projects: 'Proyectos', contact: 'Contacto' },
+  nav: { about: 'Sobre mí', areas: 'Áreas', projects: 'Proyectos', gallery: 'Galería', contact: 'Contacto' },
   technology: { heading: 'TECNOLOGÍAS' },
-  hero: { first: 'ÓSCAR', last: 'TREVEJO', imageAlt: 'Retrato ilustrado de Óscar Trevejo' },
+  hero: {
+    first: 'ÓSCAR', last: 'TREVEJO', imageAlt: 'Retrato ilustrado de Óscar Trevejo',
+    roles: ['Diseñador frontend sénior', 'Diseñador gráfico', 'Artista de modelado 3D', 'Desarrollador creativo'],
+  },
+  theme: { toLight: 'Activar modo claro', toDark: 'Activar modo oscuro' },
+  gallery: {
+    metaTitle: 'Galería — Óscar Trevejo', metaDescription: 'Galería visual organizada por fotografía, diseño, portadas, logotipos, arte 3D y videoclips.',
+    title: 'GALERÍA', intro: 'Un archivo visual ordenado por disciplina. Explora cada colección y abre las piezas para verlas en detalle.',
+    all: 'Todo', pieces: 'piezas', image: 'Pieza', video: 'Videoclip', close: 'Cerrar visor', previous: 'Anterior', next: 'Siguiente',
+    categories: {
+      photos: { title: 'Fotografía', description: 'Retratos, escenas y exploraciones fotográficas.' },
+      design: { title: 'Diseño', description: 'Composiciones y proyectos gráficos.' },
+      covers: { title: 'Portadas', description: 'Arte para música y publicaciones.' },
+      logos: { title: 'Logotipos', description: 'Símbolos, marcas e identidad.' },
+      threeD: { title: 'Arte 3D', description: 'Modelos y escenas tridimensionales.' },
+      videos: { title: 'Videoclips', description: 'Piezas audiovisuales y movimiento.' },
+    },
+  },
   projects: {
     eyebrow: 'Selección de proyectos',
     heading: 'PROYECTOS',

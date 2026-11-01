@@ -1,5 +1,5 @@
-import whtyImage from '../assets/projects/whty.png'
-import presentyImage from '../assets/projects/presenty.png'
+import whtyImage from '../assets/projects/whty.webp'
+import presentyImage from '../assets/projects/presenty.webp'
 
 export const PROJECTS = [
   {
@@ -22,6 +22,7 @@ export const EXPERIENCE = [
   { id: 'caixabank', company: 'CaixaBank Tech', period: '2024 — ' },
   { id: 'capgemini', company: 'Capgemini / Openbank', period: '2023 — 2024' },
   { id: 'aquiles', company: 'Aquiles Solutions', period: '2019 — 2023' },
+  { id: 'ubisoft', company: 'Ubisoft', period: '2018 — 2019' },
 ] as const
 
 export const SPECIALTY_IDS = [

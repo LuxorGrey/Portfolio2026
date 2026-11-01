@@ -1,6 +1,6 @@
 # Diseño vigente
 
-La dirección visual parte del RTF original y del prototipo C. La decisión más reciente de Oscar está registrada en [ADR 0004](adr/0004-project-first-layout-and-direct-gaze.md). La implementación CSS está en `Portfolio2026/src/app.css`.
+La dirección visual parte del RTF original y del prototipo C. La decisión más reciente de Oscar está registrada en [ADR 0007](adr/0007-gallery-theme-and-role-bubble.md). La implementación CSS está en `src/app.css`.
 
 ## Composición
 
@@ -8,11 +8,13 @@ La dirección visual parte del RTF original y del prototipo C. La decisión más
 Navegación ES/EN
 ÓSCAR
 TREVEJO      ← avatar ilustrado delante del nombre
+bocadillo de roles bajo la cabeza
 PROYECTOS    ← inmediatamente después del hero
 WHTY / Presenty
 ENTRE EL CÓDIGO Y LA IMAGEN + experiencia
 Carrusel de tecnologías sobre cuadrícula oscura
 LO QUE HAGO (cinco áreas)
+GALERÍA en pantalla propia (seis categorías)
 ¿HABLAMOS? / LinkedIn, GitHub, ArtStation
 ```
 
@@ -31,6 +33,8 @@ No hay descriptor, CTA ni pistas de interacción bajo la portada. El avatar pued
 | Esquinas de secciones | 60 px escritorio, 36 px móvil |
 
 El único acento figurativo es el avatar. El menú conserva las esquinas recortadas y el contorno fino de LuxorStudio. El hero, Sobre mí, el carrusel y el contacto comparten su cuadrícula de 100 px; alrededor del puntero se ilumina ligeramente. No se copia la línea roja animada. Mantener foco visible, lectura clara, contraste suficiente y modo de movimiento reducido. El parallax suave del avatar se conserva; la mirada, el parpadeo y la lengua cambian una imagen completa de forma inmediata.
+
+La variante clara usa superficies gris hielo, cuadrícula y tipografía oscuras, sin alterar el orden de las secciones. El bocadillo se coloca debajo del mentón y cambia solo el texto. La galería usa una portada tipográfica con cuadrícula y un catálogo de categorías sobre fondo claro; las obras conservan sus proporciones en un mosaico de columnas.
 
 ## Revisión visual
 
