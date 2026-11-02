@@ -66,6 +66,7 @@ function warpRegion(
   source: HTMLCanvasElement,
   anchor: Point,
   pull: Point,
+  showMesh: boolean,
 ) {
   const radius = 160
   const left = Math.max(0, anchor.x - radius)
@@ -102,6 +103,32 @@ function warpRegion(
       paintTriangle(context, source, d, c, b, wd, wc, wb)
     }
   }
+  if (!showMesh) return
+
+  // Reveal the same deformation mesh while the user is pulling the portrait.
+  context.save()
+  context.globalCompositeOperation = 'source-atop'
+  context.strokeStyle = 'rgba(215, 226, 234, 0.42)'
+  context.lineWidth = 0.75
+  for (let row = 0; row <= rows; row++) {
+    context.beginPath()
+    for (let column = 0; column <= columns; column++) {
+      const point = warped({ x: left + column * cellWidth, y: top + row * cellHeight })
+      if (column === 0) context.moveTo(point.x, point.y)
+      else context.lineTo(point.x, point.y)
+    }
+    context.stroke()
+  }
+  for (let column = 0; column <= columns; column++) {
+    context.beginPath()
+    for (let row = 0; row <= rows; row++) {
+      const point = warped({ x: left + column * cellWidth, y: top + row * cellHeight })
+      if (row === 0) context.moveTo(point.x, point.y)
+      else context.lineTo(point.x, point.y)
+    }
+    context.stroke()
+  }
+  context.restore()
 }
 
 function loadFrame(url: string): Promise<HTMLCanvasElement> {
@@ -119,7 +146,7 @@ function loadFrame(url: string): Promise<HTMLCanvasElement> {
   })
 }
 
-export default function InteractiveFace({ ariaLabel }: { ariaLabel: string }) {
+export default function InteractiveFace({ ariaLabel, onDragChange }: { ariaLabel: string; onDragChange?: (dragging: boolean) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const layerRef = useRef<HTMLDivElement>(null)
   const fallbackRef = useRef<HTMLImageElement>(null)
@@ -185,7 +212,7 @@ export default function InteractiveFace({ ariaLabel }: { ariaLabel: string }) {
       if (tongueUntil <= now && (dragAnchor !== null || Math.hypot(pull.x, pull.y) > 0.3)) {
         snapshotContext.clearRect(0, 0, SIZE, SIZE)
         snapshotContext.drawImage(canvas, 0, 0)
-        warpRegion(context, snapshot, dragAnchor ?? lastDragAnchor, pull)
+        warpRegion(context, snapshot, dragAnchor ?? lastDragAnchor, pull, dragAnchor !== null)
       }
     }
 
@@ -288,6 +315,7 @@ export default function InteractiveFace({ ariaLabel }: { ariaLabel: string }) {
         dragStarted = performance.now()
         tongueUntil = 0
         canvas!.classList.add('is-pulling')
+        onDragChange?.(true)
       }
       if (dragAnchor === null) return
       targetPull = {
@@ -310,6 +338,7 @@ export default function InteractiveFace({ ariaLabel }: { ariaLabel: string }) {
       }
       canvas!.classList.remove('is-pulling')
       canvas!.style.cursor = 'grab'
+      if (wasDrag) onDragChange?.(false)
       draw()
     }
 
@@ -354,6 +383,7 @@ export default function InteractiveFace({ ariaLabel }: { ariaLabel: string }) {
     animationFrame = requestAnimationFrame(tick)
 
     return () => {
+      if (dragAnchor !== null) onDragChange?.(false)
       disposed = true
       cancelAnimationFrame(animationFrame)
       window.removeEventListener('pointermove', onWindowPointerMove)
@@ -364,7 +394,7 @@ export default function InteractiveFace({ ariaLabel }: { ariaLabel: string }) {
       canvas.removeEventListener('lostpointercapture', onPointerUp)
       observer.disconnect()
     }
-  }, [])
+  }, [onDragChange])
 
   return (
     <div

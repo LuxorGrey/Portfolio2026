@@ -13,7 +13,9 @@ export const es = {
   gallery: {
     metaTitle: 'Galería — Óscar Trevejo', metaDescription: 'Galería visual organizada por fotografía, diseño, portadas, logotipos, arte 3D y videoclips.',
     title: 'GALERÍA', intro: 'Un archivo visual ordenado por disciplina. Explora cada colección y abre las piezas para verlas en detalle.',
-    all: 'Todo', pieces: 'piezas', image: 'Pieza', video: 'Videoclip', close: 'Cerrar visor', previous: 'Anterior', next: 'Siguiente',
+    all: 'Todo', pieces: 'piezas', image: 'Pieza', video: 'Videoclip', close: 'Cerrar visor', previous: 'Anterior', next: 'Siguiente', loading: 'Cargando galería',
+    featuredEyebrow: 'Archivo visual', featuredTitle: 'UNA MIRADA A LA GALERÍA', featuredLink: 'Ver toda la galería', featuredPagination: 'Elegir imagen', featuredGoTo: 'Ir a imagen',
+    featuredSlides: { portraits: 'Retratos y escenas', covers: 'Portadas que cuentan', identity: 'Forma e identidad', worlds: 'Universos visuales', selection: 'Selección gráfica' },
     categories: {
       photos: { title: 'Fotografía', description: 'Retratos, escenas y exploraciones fotográficas.' },
       design: { title: 'Diseño', description: 'Composiciones y proyectos gráficos.' },

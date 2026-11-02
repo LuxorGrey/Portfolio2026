@@ -15,7 +15,9 @@ export const en: Copy = {
   gallery: {
     metaTitle: 'Gallery — Oscar Trevejo', metaDescription: 'Visual gallery of photography, design, covers, logotypes, 3D art and music videos.',
     title: 'GALLERY', intro: 'A visual archive arranged by discipline. Explore each collection and open the pieces for a closer look.',
-    all: 'All', pieces: 'pieces', image: 'Piece', video: 'Music video', close: 'Close viewer', previous: 'Previous', next: 'Next',
+    all: 'All', pieces: 'pieces', image: 'Piece', video: 'Music video', close: 'Close viewer', previous: 'Previous', next: 'Next', loading: 'Loading gallery',
+    featuredEyebrow: 'Visual archive', featuredTitle: 'A LOOK AT THE GALLERY', featuredLink: 'Explore the gallery', featuredPagination: 'Choose image', featuredGoTo: 'Go to image',
+    featuredSlides: { portraits: 'Portraits and scenes', covers: 'Covers with a story', identity: 'Form and identity', worlds: 'Visual worlds', selection: 'Graphic selection' },
     categories: {
       photos: { title: 'Photography', description: 'Portraits, scenes and photographic studies.' },
       design: { title: 'Design', description: 'Compositions and graphic projects.' },

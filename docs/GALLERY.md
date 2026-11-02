@@ -8,6 +8,7 @@ La galería se abre en `/es/galeria/` y `/en/gallery/` desde el menú. Mantiene 
 - `public/gallery/`: WebP completos de hasta 1920 px y miniaturas de 480 px en `thumbs/`.
 - `src/constants/gallery-images.generated.json`: rutas, orden numérico y dimensiones producidas por `npm run images:optimize`.
 - `src/constants/gallery.ts`: categorías, portadas e identificadores de vídeo. Las imágenes siguen el orden numérico de WHTY.
+- `HOME_GALLERY_SLIDES` en ese mismo archivo: cinco selecciones de tres obras para el carrusel de portada; todas usan el mismo layout, con la obra central alta y las laterales inclinadas. Sus títulos se traducen en `src/locales/es.ts` y `en.ts`.
 - `src/locales/es.ts` y `src/locales/en.ts`: título, descripción, nombres de categorías, botones, textos alternativos y metadatos de la galería.
 - `src/components/GalleryPage.tsx`: filtros, mosaico adaptable y vista ampliada con navegación anterior/siguiente.
 - `src/app.css`: diseño de la galería en escritorio y móvil.

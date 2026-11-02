@@ -1,21 +1,31 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type MouseEvent } from 'react'
 import { ArrowUpRight, Moon, Sun } from 'lucide-react'
 import InteractiveFace from './components/InteractiveFace'
 import HeroRoleBubble from './components/HeroRoleBubble'
+import HeroScrambleTitle from './components/HeroScrambleTitle'
+import GallerySkeleton from './components/GallerySkeleton'
+import NavigationCurtain, { type CurtainPhase } from './components/NavigationCurtain'
 import { EXPERIENCE, PROJECTS, SPECIALTY_IDS, TECHNOLOGIES } from './constants/content'
 import { DEFAULT_LOCALE, SITE, type Locale } from './constants/site'
 import { COPY } from './locales'
 import './app.css'
 
 const GalleryPage = lazy(() => import('./components/GalleryPage'))
+const HomeGalleryCarousel = lazy(() => import('./components/HomeGalleryCarousel'))
+const ScrollWordReveal = lazy(() => import('./components/ScrollWordReveal'))
+const basePath = import.meta.env.BASE_URL
+const routePath = () => window.location.pathname.startsWith(basePath)
+  ? window.location.pathname.slice(basePath.length - 1)
+  : window.location.pathname
+const sitePath = (path: string) => `${basePath}${path.slice(1)}`
 
 function readLocale(): Locale {
-  const route = window.location.pathname.split('/')[1]
+  const route = routePath().split('/')[1]
   return route === 'es' || route === 'en' ? route : DEFAULT_LOCALE
 }
 
 function readPage() {
-  return /^\/(es|en)\/(galeria|gallery)(\/|$)/.test(window.location.pathname) ? 'gallery' : 'home'
+  return /^\/(es|en)\/(galeria|gallery)(\/|$)/.test(routePath()) ? 'gallery' : 'home'
 }
 
 function readTheme(): 'dark' | 'light' {
@@ -27,17 +37,26 @@ function App() {
   const [locale, setLocale] = useState<Locale>(readLocale)
   const [page, setPage] = useState<'home' | 'gallery'>(readPage)
   const [theme, setTheme] = useState<'dark' | 'light'>(readTheme)
+  const [scrambleTrigger, setScrambleTrigger] = useState(0)
+  const [faceDragging, setFaceDragging] = useState(false)
+  const [curtainPhase, setCurtainPhase] = useState<CurtainPhase>('idle')
+  const [featuredReady, setFeaturedReady] = useState(false)
+  const [revealReady, setRevealReady] = useState(false)
+  const navigationTimers = useRef<number[]>([])
+  const featuredRef = useRef<HTMLDivElement>(null)
+  const specialtiesRef = useRef<HTMLElement>(null)
   const copy = COPY[locale]
-  const homeHref = `/${locale}/`
-  const galleryHref = `/${locale}/${locale === 'es' ? 'galeria' : 'gallery'}/`
+  const homeHref = sitePath(`/${locale}/`)
+  const galleryHref = sitePath(`/${locale}/${locale === 'es' ? 'galeria' : 'gallery'}/`)
+  const handleFaceDragChange = useCallback((dragging: boolean) => setFaceDragging(dragging), [])
 
   useEffect(() => {
-    if (!/^\/(es|en)(\/|$)/.test(window.location.pathname)) {
-      window.history.replaceState({}, '', `/${DEFAULT_LOCALE}/${window.location.hash}`)
+    if (!/^\/(es|en)(\/|$)/.test(routePath())) {
+      window.history.replaceState({}, '', `${sitePath(`/${DEFAULT_LOCALE}/`)}${window.location.hash}`)
     }
-    const onPopState = () => { setLocale(readLocale()); setPage(readPage()) }
+    const onPopState = () => navigate(window.location.href, false)
     window.addEventListener('popstate', onPopState)
-    return () => window.removeEventListener('popstate', onPopState)
+    return () => { window.removeEventListener('popstate', onPopState); navigationTimers.current.forEach(window.clearTimeout) }
   }, [])
 
   useEffect(() => {
@@ -50,6 +69,21 @@ function App() {
     document.documentElement.dataset.theme = theme
     try { window.localStorage.setItem('portfolio-theme', theme) } catch { /* Storage may be disabled. */ }
   }, [theme])
+
+  useEffect(() => {
+    if (page !== 'home') return
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return
+        if (entry.target === featuredRef.current) setFeaturedReady(true)
+        if (entry.target === specialtiesRef.current) setRevealReady(true)
+        observer.unobserve(entry.target)
+      })
+    }, { rootMargin: '650px' })
+    if (featuredRef.current) observer.observe(featuredRef.current)
+    if (specialtiesRef.current) observer.observe(specialtiesRef.current)
+    return () => observer.disconnect()
+  }, [page])
 
   useEffect(() => {
     const onPointerMove = (event: PointerEvent) => {
@@ -65,22 +99,52 @@ function App() {
     return () => window.removeEventListener('pointermove', onPointerMove)
   }, [])
 
+  function navigate(href: string, push = true) {
+    const target = new URL(href, window.location.href)
+    const nextPath = `${target.pathname}${target.search}${target.hash}`
+    if (push && nextPath === `${window.location.pathname}${window.location.search}${window.location.hash}`) return
+    navigationTimers.current.forEach(window.clearTimeout)
+    navigationTimers.current = []
+    const apply = () => {
+      if (push) window.history.pushState({}, '', nextPath)
+      setLocale(readLocale())
+      setPage(readPage())
+      window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+        if (target.hash) document.getElementById(decodeURIComponent(target.hash.slice(1)))?.scrollIntoView({ behavior: 'instant' })
+        else window.scrollTo({ top: 0, behavior: 'instant' })
+      }))
+    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setCurtainPhase('idle'); apply(); return }
+    setCurtainPhase('cover')
+    navigationTimers.current.push(window.setTimeout(() => {
+      apply()
+      navigationTimers.current.push(window.setTimeout(() => setCurtainPhase('reveal'), 80))
+      navigationTimers.current.push(window.setTimeout(() => setCurtainPhase('idle'), 760))
+    }, 360))
+  }
+
+  function handleNavigation(event: MouseEvent<HTMLAnchorElement>) {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+    event.preventDefault()
+    navigate(event.currentTarget.href)
+  }
+
   function switchLocale() {
     const next: Locale = locale === 'es' ? 'en' : 'es'
-    const nextPath = page === 'gallery' ? `/${next}/${next === 'es' ? 'galeria' : 'gallery'}/` : `/${next}/`
-    window.history.pushState({}, '', `${nextPath}${window.location.hash}`)
-    setLocale(next)
+    const nextPath = page === 'gallery' ? sitePath(`/${next}/${next === 'es' ? 'galeria' : 'gallery'}/`) : sitePath(`/${next}/`)
+    navigate(`${nextPath}${window.location.hash}`)
   }
 
   return (
     <div className="site-shell" id="inicio">
+      <NavigationCurtain phase={curtainPhase} />
       <header className="site-header grid-surface">
         <nav aria-label={copy.accessibility.navigation}>
-          <a href={`${homeHref}#proyectos`}>{copy.nav.projects}</a>
-          <a href={`${homeHref}#areas`}>{copy.nav.areas}</a>
-          <a href={galleryHref} aria-current={page === 'gallery' ? 'page' : undefined}>{copy.nav.gallery}</a>
-          <a href={`${homeHref}#sobre-mi`}>{copy.nav.about}</a>
-          <a href="#contacto">{copy.nav.contact}<ArrowUpRight size={16} aria-hidden="true" /></a>
+          <a href={`${homeHref}#proyectos`} onClick={handleNavigation}>{copy.nav.projects}</a>
+          <a href={`${homeHref}#areas`} onClick={handleNavigation}>{copy.nav.areas}</a>
+          <a href={galleryHref} onClick={handleNavigation} aria-current={page === 'gallery' ? 'page' : undefined}>{copy.nav.gallery}</a>
+          <a href={`${homeHref}#sobre-mi`} onClick={handleNavigation}>{copy.nav.about}</a>
+          <a href="#contacto" onClick={handleNavigation}>{copy.nav.contact}<ArrowUpRight size={16} aria-hidden="true" /></a>
         </nav>
         <div className="header-controls">
           <button type="button" className="theme-switch" role="switch" aria-checked={theme === 'light'} aria-label={theme === 'dark' ? copy.theme.toLight : copy.theme.toDark} onClick={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')}>
@@ -92,11 +156,11 @@ function App() {
         </div>
       </header>
 
-      {page === 'gallery' ? <Suspense fallback={<main className="gallery-loading grid-surface" aria-busy="true">{copy.gallery.title}</main>}><GalleryPage copy={copy} /></Suspense> : <main>
+      {page === 'gallery' ? <Suspense fallback={<GallerySkeleton copy={copy} />}><GalleryPage copy={copy} /></Suspense> : <main>
         <section className="hero grid-surface" aria-labelledby="hero-title">
-          <div className="hero-stage">
-            <h1 id="hero-title" className="hero-title"><span>{copy.hero.first}</span><span>{copy.hero.last}</span></h1>
-            <div className="hero-face"><InteractiveFace ariaLabel={copy.hero.imageAlt} /></div>
+          <div className="hero-stage" onPointerEnter={() => setScrambleTrigger((value) => value + 1)}>
+            <HeroScrambleTitle first={copy.hero.first} last={copy.hero.last} trigger={scrambleTrigger} dragging={faceDragging} />
+            <div className="hero-face"><InteractiveFace ariaLabel={copy.hero.imageAlt} onDragChange={handleFaceDragChange} /></div>
             <HeroRoleBubble roles={copy.hero.roles} />
           </div>
         </section>
@@ -129,6 +193,10 @@ function App() {
           </div>
         </section>
 
+        <div ref={featuredRef}>
+          {featuredReady ? <Suspense fallback={<section className="home-gallery grid-surface home-gallery-placeholder"><div className="shimmer" /></section>}><HomeGalleryCarousel copy={copy} href={galleryHref} navigate={navigate} /></Suspense> : <section className="home-gallery grid-surface home-gallery-placeholder"><div className="shimmer" /></section>}
+        </div>
+
         <section className="about grid-surface" id="sobre-mi" aria-labelledby="about-title">
           <div className="about-heading">
             <span className="section-index">02 / {copy.about.eyebrow}</span>
@@ -160,15 +228,14 @@ function App() {
           </div>
         </section>
 
-        <section className="specialties" id="areas" aria-labelledby="areas-title">
+        <section className="specialties" id="areas" aria-labelledby="areas-title" ref={specialtiesRef}>
           <div className="specialties-inner">
             <h2 id="areas-title">{copy.specialties.heading}</h2>
             <ol>
               {SPECIALTY_IDS.map((id, index) => (
-                <li key={id}>
-                  <span className="specialty-number">{String(index + 1).padStart(2, '0')}</span>
-                  <div><h3>{copy.specialties[id].title}</h3><p>{copy.specialties[id].body}</p></div>
-                </li>
+                revealReady ? <Suspense key={id} fallback={<li><span className="specialty-number">{String(index + 1).padStart(2, '0')}</span><div><h3>{copy.specialties[id].title}</h3><p>{copy.specialties[id].body}</p></div></li>}>
+                  <ScrollWordReveal number={String(index + 1).padStart(2, '0')} title={copy.specialties[id].title} text={copy.specialties[id].body} />
+                </Suspense> : <li key={id}><span className="specialty-number">{String(index + 1).padStart(2, '0')}</span><div><h3>{copy.specialties[id].title}</h3><p>{copy.specialties[id].body}</p></div></li>
               ))}
             </ol>
           </div>

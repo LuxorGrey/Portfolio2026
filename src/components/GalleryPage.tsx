@@ -5,6 +5,14 @@ import type { Copy } from '../locales/types'
 
 type GalleryItem = { category: GalleryCategoryId; src: string; thumbnail: string; width: number; height: number; videoId?: string; number: number }
 
+function GalleryThumbnail({ src, width, height }: { src: string; width?: number; height?: number }) {
+  const [loaded, setLoaded] = useState(false)
+  return <>
+    {!loaded && <span className="gallery-image-skeleton shimmer" aria-hidden="true" />}
+    <img src={src} alt="" width={width} height={height} loading="lazy" decoding="async" onLoad={() => setLoaded(true)} onError={() => setLoaded(true)} />
+  </>
+}
+
 const ALL_ITEMS: GalleryItem[] = GALLERY_CATEGORY_IDS.flatMap<GalleryItem>((category) =>
   category === 'videos'
     ? GALLERY_VIDEOS.map((videoId, index) => ({ category, videoId, src: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`, thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`, width: 480, height: 360, number: index + 1 }))
@@ -75,7 +83,7 @@ export default function GalleryPage({ copy }: { copy: Copy }) {
         <div className="gallery-categories">
           {GALLERY_CATEGORY_IDS.map((id) => (
             <button className="gallery-category-card" type="button" key={id} onClick={() => selectCategory(id)}>
-              <img src={GALLERY_PREVIEWS[id]} alt="" loading="lazy" />
+              <GalleryThumbnail src={GALLERY_PREVIEWS[id]} />
               <span className="gallery-category-overlay"><strong>{copy.gallery.categories[id].title}</strong><small>{categoryCount(id)} {copy.gallery.pieces}</small></span>
             </button>
           ))}
@@ -93,7 +101,7 @@ export default function GalleryPage({ copy }: { copy: Copy }) {
           <div className="gallery-masonry">
             {shownItems.map((item, index) => (
               <button className="gallery-tile" type="button" key={`${item.category}-${item.number}`} onClick={(event) => openItem(index, event.currentTarget)} aria-label={`${copy.gallery.categories[item.category].title} — ${item.videoId ? copy.gallery.video : copy.gallery.image} ${item.number}`}>
-                <img src={item.thumbnail} alt="" width={item.width} height={item.height} loading="lazy" decoding="async" />
+                <GalleryThumbnail src={item.thumbnail} width={item.width} height={item.height} />
                 <span className="gallery-tile-caption">{copy.gallery.categories[item.category].title}<span>{String(item.number).padStart(2, '0')}</span></span>
                 {item.videoId && <Play className="gallery-play" aria-hidden="true" />}
               </button>

@@ -9,12 +9,14 @@ Auditoría local del 1 de noviembre de 2026. Las cifras son tamaños de archivos
 | Diez variantes del retrato | Aproximadamente 18 MiB en PNG | 1,83 MiB en WebP | La imagen central carga primero; las demás llegan después. |
 | Dos imágenes de proyectos | Aproximadamente 1,44 MiB en PNG | 0,10 MiB en WebP | `loading="lazy"`, `decoding="async"` y dimensiones declaradas. |
 | Galería y portada de vídeo | 83 originales, parte de los 24,19 MiB de entrada total | 83 WebP completos y 83 miniaturas; 5,6 MiB en conjunto | El mosaico solicita miniaturas; el visor solicita la imagen grande bajo demanda. |
-| JavaScript de la portada | Sin medición anterior comparable | 245,15 KB bruto / 77,87 KB gzip | El código de la galería queda en otro bloque: 14,27 KB bruto / 2,89 KB gzip. |
-| CSS de producción | Tailwind y estilos propios | 19,99 KB bruto / 4,98 KB gzip | Se retiraron Tailwind y Motion porque no se usaban en la aplicación. |
+| JavaScript de la portada | Sin medición anterior comparable | 375,50 KB bruto / 121,09 KB gzip en el bloque principal | La galería queda en otro bloque de 1,93 KB gzip. El carrusel y el revelado se cargan al acercarse a sus secciones. |
+| CSS de producción | Tailwind y estilos propios | 25,38 KB bruto / 6,02 KB gzip | Tailwind se retiró por no estar en uso; los nuevos efectos y composiciones añaden estilos propios. |
 
 `npm run images:optimize` utiliza Sharp y `source-assets/gallery/` para generar `public/gallery/`, `src/constants/gallery-images.generated.json` y los WebP del avatar/proyectos. Los originales se conservan para cambios futuros, pero Vite no los incluye en `dist/`. Al añadir o sustituir una obra hay que regenerar y revisar el manifiesto. Las miniaturas miden como máximo 480 px; las imágenes ampliadas, 1920 px. Los originales del avatar mantienen 1254 × 1254 para conservar la alineación de todas las expresiones.
 
 La portada da prioridad a la variante central del avatar. La galería se importa con `React.lazy`, muestra 24 piezas al entrar y añade lotes de 24 con `IntersectionObserver` y margen de 900 px. Esto limita el DOM y las solicitudes iniciales; no es virtualización estricta con desmontaje de piezas anteriores. Para 87 piezas y un mosaico de alturas variables, evita un sistema de posicionamiento complejo y mantiene la navegación y el foco. Las imágenes fuera de pantalla usan carga nativa diferida; el iframe de YouTube solo existe al abrir un vídeo. Kanit se sirve desde el propio sitio, sin petición a Google Fonts. Los recursos con nombre versionado tienen caché inmutable; los de galería, caché de una semana.
+
+Las nuevas animaciones visuales se documentan en [ADR 0008](adr/0008-motion-interactions.md). El carrusel y el revelado se cargan en módulos diferidos; el carrusel monta solo una composición de tres imágenes por vez. Los fotogramas del retrato se reutilizan para la deformación con malla visible. La cortina y el bocadillo no retrasan artificialmente la carga de datos. La compilación es una medición local de tamaño; conviene volver a medir Core Web Vitals en producción.
 
 ## Comprobación
 

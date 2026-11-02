@@ -1,12 +1,18 @@
 # Portfolio de Oscar Trevejo Rodríguez — briefing de producto
 
-> **Estado:** aplicación local implementada en este repositorio. `README.rtf` conserva la referencia visual inicial. La decisión más reciente sobre diseño e interacción está en [ADR 0007](docs/adr/0007-gallery-theme-and-role-bubble.md).
+> **Estado:** portfolio publicado en GitHub Pages desde `main`. `README.rtf` conserva la referencia visual inicial. La decisión más reciente sobre diseño e interacción está en [ADR 0008](docs/adr/0008-motion-interactions.md).
+
+Las interacciones de escritura, revelado, carrusel, skeleton y cortina de navegación se describen en [ADR 0008](docs/adr/0008-motion-interactions.md).
 
 ## Desarrollo local
 
 Requiere Node.js 24 o superior y npm. Ejecutar `npm ci`, `npm run dev`, `npm run lint`, `npm run typecheck` y `npm run build` desde la raíz del repositorio. La portada se abre en `/es/` y `/en/`, y la galería en `/es/galeria/` y `/en/gallery/`. El prototipo de diseño está en `/prototype/design`.
 
 Para regenerar las imágenes WebP y sus miniaturas a partir de los originales locales, ejecutar `npm run images:optimize`. Las decisiones de carga, las cifras medidas, el escaneo de seguridad y los pasos de comprobación están en [docs/PERFORMANCE-SECURITY.md](docs/PERFORMANCE-SECURITY.md).
+
+## Despliegue
+
+Cada push a `main` ejecuta `.github/workflows/deploy.yml` y publica `dist/` en [GitHub Pages](https://luxorgrey.github.io/Portfolio2026/). Vite usa `/Portfolio2026/` como base; el build crea páginas de entrada para los dos idiomas y sus galerías, de modo que los enlaces directos y las recargas funcionen en Pages.
 
 ## Objetivo
 
