@@ -52,5 +52,5 @@ export const en: Copy = {
     integration: { title: 'Design and code', body: 'An idea that keeps its intent when it becomes a product.' },
   },
   contact: { eyebrow: 'Contact', heading: 'LET’S TALK', linkedin: 'LinkedIn', github: 'GitHub', artstation: 'ArtStation' },
-  accessibility: { navigation: 'Main navigation', language: 'Change language', external: 'Opens in a new tab' },
+  accessibility: { navigation: 'Main navigation', home: 'Back to start', language: 'Change language', external: 'Opens in a new tab' },
 }

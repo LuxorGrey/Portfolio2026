@@ -50,5 +50,5 @@ export const es = {
     integration: { title: 'Diseño y código', body: 'Una idea que conserva su intención al convertirse en producto.' },
   },
   contact: { eyebrow: 'Contacto', heading: '¿HABLAMOS?', linkedin: 'LinkedIn', github: 'GitHub', artstation: 'ArtStation' },
-  accessibility: { navigation: 'Navegación principal', language: 'Cambiar idioma', external: 'Abre en una pestaña nueva' },
+  accessibility: { navigation: 'Navegación principal', home: 'Volver al inicio', language: 'Cambiar idioma', external: 'Abre en una pestaña nueva' },
 }

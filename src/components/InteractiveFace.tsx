@@ -148,11 +148,13 @@ function loadFrame(url: string): Promise<HTMLCanvasElement> {
 
 export default function InteractiveFace({ ariaLabel, onDragChange }: { ariaLabel: string; onDragChange?: (dragging: boolean) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const mobileTouchRef = useRef<HTMLDivElement>(null)
   const layerRef = useRef<HTMLDivElement>(null)
   const fallbackRef = useRef<HTMLImageElement>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
+    const mobileTouch = mobileTouchRef.current
     const layer = layerRef.current
     const context = canvas?.getContext('2d')
     if (!canvas || !layer || !context) return
@@ -168,6 +170,7 @@ export default function InteractiveFace({ ariaLabel, onDragChange }: { ariaLabel
     let pressedAnchor: Point | null = null
     let lastDragAnchor: Point = { x: 0, y: 0 }
     let activePointerId: number | null = null
+    let activeTarget: HTMLElement | null = null
     let dragOrigin = { x: 0, y: 0 }
     let pointerOrigin = { x: 0, y: 0 }
     let dragStarted = 0
@@ -299,14 +302,15 @@ export default function InteractiveFace({ ariaLabel, onDragChange }: { ariaLabel
       dragOrigin = point
       pointerOrigin = { x: event.clientX, y: event.clientY }
       activePointerId = event.pointerId
-      canvas!.setPointerCapture(event.pointerId)
+      activeTarget = event.currentTarget as HTMLElement
+      activeTarget.setPointerCapture(event.pointerId)
       event.preventDefault()
     }
 
     function onFacePointerMove(event: PointerEvent) {
       const point = localPoint(event)
       if (pressedAnchor === null || event.pointerId !== activePointerId) {
-        canvas!.style.cursor = isOnFace(point) ? 'grab' : 'default'
+        ;(event.currentTarget as HTMLElement).style.cursor = isOnFace(point) ? 'grab' : 'default'
         return
       }
       if (dragAnchor === null && Math.hypot(event.clientX - pointerOrigin.x, event.clientY - pointerOrigin.y) >= 8) {
@@ -314,7 +318,7 @@ export default function InteractiveFace({ ariaLabel, onDragChange }: { ariaLabel
         lastDragAnchor = pressedAnchor
         dragStarted = performance.now()
         tongueUntil = 0
-        canvas!.classList.add('is-pulling')
+        activeTarget?.classList.add('is-pulling')
         onDragChange?.(true)
       }
       if (dragAnchor === null) return
@@ -331,13 +335,15 @@ export default function InteractiveFace({ ariaLabel, onDragChange }: { ariaLabel
       dragAnchor = null
       pressedAnchor = null
       activePointerId = null
+      activeTarget = null
       targetPull = { x: 0, y: 0 }
       if (wasShortClick) {
         tongueUntil = performance.now() + 1000
         blinkUntil = 0
       }
-      canvas!.classList.remove('is-pulling')
-      canvas!.style.cursor = 'grab'
+      const releasedTarget = event.currentTarget as HTMLElement
+      releasedTarget.classList.remove('is-pulling')
+      releasedTarget.style.cursor = 'grab'
       if (wasDrag) onDragChange?.(false)
       draw()
     }
@@ -372,6 +378,11 @@ export default function InteractiveFace({ ariaLabel, onDragChange }: { ariaLabel
     canvas.addEventListener('pointerup', onPointerUp)
     canvas.addEventListener('pointercancel', onPointerUp)
     canvas.addEventListener('lostpointercapture', onPointerUp)
+    mobileTouch?.addEventListener('pointerdown', onPointerDown)
+    mobileTouch?.addEventListener('pointermove', onFacePointerMove)
+    mobileTouch?.addEventListener('pointerup', onPointerUp)
+    mobileTouch?.addEventListener('pointercancel', onPointerUp)
+    mobileTouch?.addEventListener('lostpointercapture', onPointerUp)
     const observer = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting
@@ -392,6 +403,11 @@ export default function InteractiveFace({ ariaLabel, onDragChange }: { ariaLabel
       canvas.removeEventListener('pointerup', onPointerUp)
       canvas.removeEventListener('pointercancel', onPointerUp)
       canvas.removeEventListener('lostpointercapture', onPointerUp)
+      mobileTouch?.removeEventListener('pointerdown', onPointerDown)
+      mobileTouch?.removeEventListener('pointermove', onFacePointerMove)
+      mobileTouch?.removeEventListener('pointerup', onPointerUp)
+      mobileTouch?.removeEventListener('pointercancel', onPointerUp)
+      mobileTouch?.removeEventListener('lostpointercapture', onPointerUp)
       observer.disconnect()
     }
   }, [onDragChange])
@@ -405,6 +421,7 @@ export default function InteractiveFace({ ariaLabel, onDragChange }: { ariaLabel
     >
       <img ref={fallbackRef} src={centerUrl} alt="" aria-hidden="true" width="1254" height="1254" fetchPriority="high" />
       <canvas ref={canvasRef} aria-hidden="true" />
+      <div ref={mobileTouchRef} className="face-mobile-touch" aria-hidden="true" />
     </div>
   )
 }

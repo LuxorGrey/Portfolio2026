@@ -129,6 +129,13 @@ function App() {
     navigate(event.currentTarget.href)
   }
 
+  function handleHomeClick(event: MouseEvent<HTMLAnchorElement>) {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+    if (page !== 'home') { handleNavigation(event); return }
+    event.preventDefault()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   function switchLocale() {
     const next: Locale = locale === 'es' ? 'en' : 'es'
     const nextPath = page === 'gallery' ? sitePath(`/${next}/${next === 'es' ? 'galeria' : 'gallery'}/`) : sitePath(`/${next}/`)
@@ -139,6 +146,9 @@ function App() {
     <div className="site-shell" id="inicio">
       <NavigationCurtain phase={curtainPhase} />
       <header className="site-header grid-surface">
+        <a className="site-logo" href={homeHref} onClick={handleHomeClick} aria-label={copy.accessibility.home}>
+          <img src={`${basePath}ot-logo.svg`} alt="" width="1054" height="540" />
+        </a>
         <nav aria-label={copy.accessibility.navigation}>
           <a href={`${homeHref}#proyectos`} onClick={handleNavigation}>{copy.nav.projects}</a>
           <a href={`${homeHref}#areas`} onClick={handleNavigation}>{copy.nav.areas}</a>
@@ -174,7 +184,7 @@ function App() {
             {PROJECTS.map((project) => {
               const details = copy.projects[project.id]
               return (
-                <article className="project-card" key={project.id}>
+                <a className="project-card" key={project.id} href={project.url} aria-label={`${copy.projects.view}: ${details.title}`}>
                   <div className="project-image-wrap">
                     <img src={project.image} alt={details.imageAlt} width="1345" height="742" loading="lazy" decoding="async" />
                     <span className="project-number">{project.number}</span>
@@ -183,11 +193,11 @@ function App() {
                     <div className="project-meta"><span>{details.kind}</span><span>{project.status === 'early' ? copy.projects.early : copy.projects.fullDevelopment}</span></div>
                     <h3>{details.title}</h3>
                     <p>{details.summary}</p>
-                    <a href={project.url} target="_blank" rel="noopener noreferrer" aria-label={`${copy.projects.view}: ${details.title}. ${copy.accessibility.external}`}>
+                    <span className="project-visit">
                       {copy.projects.view} <ArrowUpRight size={20} aria-hidden="true" />
-                    </a>
+                    </span>
                   </div>
-                </article>
+                </a>
               )
             })}
           </div>
