@@ -214,7 +214,8 @@ img { display: block; max-width: 100%; }
 
 @media (max-width: 620px) {
   :root { --header-offset: 112px; }
-  .site-header { flex-wrap: wrap; gap: 10px; padding: 12px 10px; }
+  .site-header { flex-wrap: wrap; gap: 10px; padding: 12px 10px; will-change: transform; }
+  .site-header::after { display: none; }
   .site-logo { position: relative !important; order: 1; left: auto; width: 54px; height: 32px; margin-right: auto; }
   .site-header nav { order: 2; width: 100%; }
   .site-header nav a { min-height: 42px; padding: 0 3px; font-size: clamp(8px, 2.35vw, 11px); letter-spacing: 0; }

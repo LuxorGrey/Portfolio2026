@@ -147,7 +147,7 @@ function App() {
       <NavigationCurtain phase={curtainPhase} />
       <header className="site-header grid-surface">
         <a className="site-logo" href={homeHref} onClick={handleHomeClick} aria-label={copy.accessibility.home}>
-          <img src={`${basePath}ot-logo.svg`} alt="" width="1054" height="540" />
+          <img src={`${basePath}${theme === 'dark' ? 'ot-logo-dark.svg' : 'ot-logo.svg'}`} alt="" width="1054" height="540" />
         </a>
         <nav aria-label={copy.accessibility.navigation}>
           <a href={`${homeHref}#proyectos`} onClick={handleNavigation}>{copy.nav.projects}</a>
